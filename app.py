@@ -3,7 +3,6 @@ import openai
 import requests 
 
 app = Flask(__name__)
-openai.api_key = "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"
 app.secret_key = "supersecretkey"
 
 @app.route('/get_objects', methods=['POST'])  # Note the method specification
