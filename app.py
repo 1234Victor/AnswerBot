@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, session
 import openai
+import os
 import requests 
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 @app.route('/get_objects', methods=['POST'])  # Note the method specification
 def user_input():
