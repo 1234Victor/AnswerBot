@@ -33,11 +33,11 @@ def user_input():
 
     After analyzing the user's input, their past requirements, and product recommended last time, your output must strictly adhere to one of the following two formats:
 
-    If the user input start with a #, you should always give 1) A list of 1 to 3 merchandise keywords, without any additional text or explanation, formatted as a list of strings: e.g., ["luxury red leather shoes", "designer red suede shoes", "high-end red patent leather heels"].
+    1) A list of 1 to 3 merchandise keywords, without any additional text or explanation, formatted as a list of strings: e.g., ["luxury red leather shoes", "designer red suede shoes", "high-end red patent leather heels"].
 
     OR
 
-    otherwise, if the input is not starting with a # and you also can't reply to the message you can 2) An error message that begins with an asterisk '*' followed by a concise error text, only when the input is extremely unclear, offensive, or adversarial.
+   2) An error message that begins with an asterisk '*' followed by a concise error text, only when the input is extremely unclear, offensive, or adversarial.
 
 
     Try your best to give relevant recommendations based on past and new requirements and product recommendations, and throw and error only when absolutely necessary. Do not include any other types of messages, explanations, or formats.
