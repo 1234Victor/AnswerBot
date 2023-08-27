@@ -7,16 +7,18 @@ import json
 from flask_cors import CORS  # Import the CORS library
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app, supports_credentials=True)
 app.secret_key = "supersecretkey"
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
+@app.before_request
+def before_request():
+    if 'history' not in session:
+        session['history'] = []
 
 @app.route('/get_objects', methods=['POST'])  # Note the method specification
 def user_input():
     try:
-        if 'history' not in session:
-            session['history'] = []
         #get user input
         incoming_data = request.get_json()  # Get incoming JSON data
         userInput = incoming_data.get('user_input', '') if incoming_data else ''
