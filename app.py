@@ -48,10 +48,10 @@ def get_products():
     user_input = incoming_data.get('user_input', '') if incoming_data else ''
 
     # Call Node.js API for product search
-    node_api_url = "http://localhost:3001/product_search"
+    node_api_url = "https://amazonbot123.onrender.com/product_search"
     payload = {
         'search_keyword': user_input,
-        'number_of_products': 5
+        'number_of_products': 3
     }
     node_response = requests.post(node_api_url, json=payload)
     product_suggestions = node_response.json() if node_response.status_code == 200 else None
