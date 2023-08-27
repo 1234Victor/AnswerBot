@@ -19,6 +19,7 @@ def user_input():
     #get user input
     incoming_data = request.get_json()  # Get incoming JSON data
     userInput = incoming_data.get('user_input', '') if incoming_data else ''
+    print(userInput)
     if userInput.lower() == "restart history":
         history = []
         return jsonify({"message": "History restarted", "products": []})
@@ -52,6 +53,7 @@ Try your best to give relevant recommendations based on past and new requirement
         model="gpt-3.5-turbo", messages=messages_to_send,
     )
     ai_message = chat_completion.choices[0].message.content
+    print(ai_message)
     if(ai_message[0] == "*"):
         history.append({"role": "assistant", "content": ai_message})
         return jsonify({"message": ai_message,"products": []})
