@@ -11,6 +11,7 @@ CORS(app)
 app.secret_key = "supersecretkey"
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
+
 history = []
 @app.route('/get_objects', methods=['POST'])  # Note the method specification
 def user_input():
@@ -20,7 +21,7 @@ def user_input():
     userInput = incoming_data.get('user_input', '') if incoming_data else ''
     if userInput.lower() == "restart history":
         history = []
-        return jsonify({"message": "History restarted"})
+        return jsonify({"message": "History restarted", "products": []})
     
     history.append({"role": "user", "content": userInput})
 
@@ -53,7 +54,7 @@ Try your best to give relevant recommendations based on past and new requirement
     ai_message = chat_completion.choices[0].message.content
     if(ai_message[0] == "*"):
         history.append({"role": "assistant", "content": ai_message})
-        return jsonify({"message": ai_message})
+        return jsonify({"message": ai_message,"products": []})
     history.append({"role": "assistant", "content": ai_message})
     clean_ai_message = ai_message.replace(r"(\w)'(\w)", r"\1\'\2")
     recommendation_list= ast.literal_eval(clean_ai_message)
@@ -65,11 +66,11 @@ Try your best to give relevant recommendations based on past and new requirement
 
 {amazon_products_str}
 
-You are a shopping adviser. Based on this information, analyze each product and write a short product evaluation for each product.
-write the descriptions as a Python list of strings. Each string must be less than 50 words.
+You are a shopping adviser. Based on this information, analyze each product and write a short critical product evaluation for each product. Don't include the title of the product in the description, but discuss the essential features of the product.
+write the evaluations as a Python list of strings. 
  
 
-["This is a description of product1", "This is a description of product2", "This is a description of product3"](and there are more than 3 products, continue generate for each following the same format)
+["This is a evaluation of product1", "This is a evluation of product2", "This is a evalution of product3", etc.]
 
 
 The products must be in the correct order. The output must be in Python with precisely correct syntax. Do not include any other types of messages, explanations, or formats.
