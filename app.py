@@ -69,7 +69,7 @@ def user_input():
 
     {amazon_products_str}
 
-    You are a shopping adviser. Based on this information, analyze each product and write a short critical product evaluation for each product. Don't include the title of the product in the description, but discuss the essential features of the product.
+    You are a shopping adviser. Based on this information, analyze each product and write a short critical product evaluation for each product. Don't include the title of the product or any links in the evaluation, but discuss the essential features of the product.
     write the evaluations as a Python list of strings. 
     
 
@@ -83,7 +83,6 @@ def user_input():
             model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt3}],
         )
         evaluation = chat_completion.choices[0].message.content
-        
         history.append({"role": "assistant", "content": evaluation})
         amazon_products_list = filter_products(amazon_products,ast.literal_eval(evaluation))
         print(amazon_products_list)
