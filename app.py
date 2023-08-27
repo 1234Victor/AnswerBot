@@ -13,6 +13,7 @@ openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 
 
+
 history = []
 @app.route('/get_objects', methods=['POST'])  # Note the method specification
 def user_input():
@@ -37,7 +38,7 @@ def user_input():
 
     OR
 
-   2) An error message that begins with an asterisk '*' followed by a concise error text, only when the input is extremely unclear, offensive, or adversarial.
+    2) An error message that begins with an asterisk '*' followed by a concise error text, only when the input is extremely unclear, offensive, or adversarial.
 
 
     Try your best to give relevant recommendations based on past and new requirements and product recommendations, and throw and error only when absolutely necessary. Do not include any other types of messages, explanations, or formats.
@@ -47,9 +48,8 @@ def user_input():
         
         prompt4 =   '''   
         You are a shopping assistant with a specific task: to provide answers and response to any inquiries regarding products recommended.
-        You must return a short answer (max 3 sentences) to any explicid customer questions that begins with an asterisk '*' followed by an explanation that uses all your knowledge to answer the question about the products recommended.
+        You must return a short answer (max 3 sentences) to any explicid customer questions with an explanation that uses all your knowledge to answer the question about the products recommended.
         Strictly return only the responsein the correct format. Do not include any other types of messages, explanations, or formats.
-        Your output should always start with an asterisk * and your answer follow it.
         '''
         if (userInput[0] == "*"):
             messages_to_send = [{"role": "system", "content": prompt4}]
@@ -88,7 +88,7 @@ def user_input():
         write the evaluations as a Python list of strings. 
         
 
-        ["This is a evaluation of product1", "This is a evluation of product2", "This is a evalution of product3", etc.]
+        ["The HP Pavilion 15 Laptop is equipped with an 11th Gen Intel Core i7-1165G7 Processor, providing good performance for everyday tasks. With 16GB RAM and a 512GB SSD, it offers sufficient storage and fast data access. The full HD IPS micro-edge display enhances visuals, and the 4.3 rating based on 922 reviews indicates its popularity and reliability for general use.", "The HP 15.6 inch Laptop PC is equipped with a 13th Generation Intel Core i7 processor, providing reliable performance. With Intel Iris Xe Graphics, it offers good visuals for multimedia and light gaming. It comes with 16GB DDR4-3200 RAM for smooth multitasking. With a 4.5 rating based on 38 reviews and being labeled as Amazon's Choice, it seems to be a popular and well-received option.", etc.]
 
 
         The products must be in the correct order. The output must be in Python with precisely correct syntax. Do not include any other types of messages, explanations, or formats.
@@ -108,7 +108,7 @@ def user_input():
             )
             reply = chat_completion.choices[0].message.content
             history.append({"role": "assistant", "content": reply})
-            
+            history.append({"role": "assistant", "content": str(amazon_products_list)})
             result = {
                 'products': amazon_products_list,
                 'message': reply,
