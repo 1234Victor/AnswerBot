@@ -9,8 +9,7 @@ from flask_cors import CORS  # Import the CORS library
 app = Flask(__name__)
 CORS(app) 
 app.secret_key = "supersecretkey"
-#openai.api_key = os.environ.get('OPENAI_API_KEY')
-openai.api_key = "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"
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 
 history = []
