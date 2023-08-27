@@ -7,7 +7,7 @@ import json
 from flask_cors import CORS  # Import the CORS library
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True,origins=["https://chat2-cart.vercel.app/"])
 app.secret_key = "supersecretkey"
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
