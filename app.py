@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 import ast
 import openai
 import os
@@ -12,22 +12,20 @@ app.secret_key = "supersecretkey"
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 
-
-
-history = []
 @app.route('/get_objects', methods=['POST'])  # Note the method specification
 def user_input():
-    global history
     try:
+        if 'history' not in session:
+            session['history'] = []
         #get user input
         incoming_data = request.get_json()  # Get incoming JSON data
         userInput = incoming_data.get('user_input', '') if incoming_data else ''
         print(userInput)
         if userInput.lower() == "restart history":
-            history = []
+            session['history'] = []
             return jsonify({"message": "History restarted", "products": []})
         
-        history.append({"role": "user", "content": userInput})
+        session['history'].append({"role": "user", "content": userInput})
 
         #get recommendation from gpt3
         prompt1 = ('''You are a shopping assistant with a specific task: to provide improved product recommendations.
@@ -53,27 +51,27 @@ def user_input():
         '''
         if (userInput[0] == "*"):
             messages_to_send = [{"role": "system", "content": prompt4}]
-            messages_to_send.extend(history)
+            messages_to_send.extend(session['history'])
             chat_completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo", messages=messages_to_send,
             )
             ai_message = chat_completion.choices[0].message.content
             print(ai_message)
             print("yes1")
-            history.append({"role": "assistant", "content": ai_message})
+            session['history'].append({"role": "assistant", "content": ai_message})
             return jsonify({"message": ai_message,"products": []})
         else:
             messages_to_send = [{"role": "system", "content": prompt1}]
-            messages_to_send.extend(history)
+            messages_to_send.extend(session['history'])
             chat_completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo", messages=messages_to_send,
             )
             ai_message = chat_completion.choices[0].message.content
             print(ai_message)
             if(ai_message[0] == "*"):
-                history.append({"role": "assistant", "content": ai_message})
+                session['history'].append({"role": "assistant", "content": ai_message})
                 return jsonify({"message": ai_message,"products": []})
-            history.append({"role": "assistant", "content": ai_message})
+            session['history'].append({"role": "assistant", "content": ai_message})
             clean_ai_message = ai_message.replace(r"(\w)'(\w)", r"\1\'\2")
             recommendation_list= ast.literal_eval(clean_ai_message)
             
@@ -98,25 +96,25 @@ def user_input():
                 model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt3}],
             )
             evaluation = chat_completion.choices[0].message.content
-            history.append({"role": "assistant", "content": evaluation})
+            session['history'].append({"role": "assistant", "content": evaluation})
             amazon_products_list = filter_products(amazon_products,ast.literal_eval(evaluation))
             print(amazon_products_list)
                 #get reply from gpt3
-            prompt2 =(f'''You are a shopping assistant tasked to find the best product based on the customer’s needs. Here is the list of products you can recommend from: \n {amazon_products_str} \nReturn a short message recommending one or two of the product that best fit the customer’s needs. Give only the name of the product and reason for recommendation. Limit the output to less than 100 words. \nUser input: {userInput}''')
+            prompt2 =(f'''You are a shopping assistant tasked to find the best product based on the customer’s needs. Here is the list of products you can recommend from: \n {amazon_products_str} \nReturn a short message recommending one or two of the product that best fit the customer’s needs. Give only the feature of the product and reason to recommend, DONNOT include any links. Limit the output to less than 50 words. \nUser input: {userInput}''')
             chat_completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt2}],
             )
             reply = chat_completion.choices[0].message.content
-            history.append({"role": "assistant", "content": reply})
-            history.append({"role": "assistant", "content": str(amazon_products_list)})
+            session['history'].append({"role": "assistant", "content": reply})
+            session['history'].append({"role": "assistant", "content": str(amazon_products_list)})
             result = {
                 'products': amazon_products_list,
                 'message': reply,
             }
+            session.modified = True
             return jsonify(result)
     except Exception as e:
         print(e)
-        history = []
         return jsonify({"message": "Error occurs. Please enter your needs again", "products": []}), 500  # Added HTTP status code 500
 
 def filter_products(products, descriptions):
